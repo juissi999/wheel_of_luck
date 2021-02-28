@@ -14,6 +14,11 @@ const onClick = () => {
   rotationspeed = 0.07 + Math.random() * 0.07
 }
 
+const onTextUpdate = (event) => {
+  names = event.target.value.split(' ').filter((name) => name !== '')
+  updateSectors()
+}
+
 const bdiv = document.createElement('div')
 const button = document.createElement('button')
 bdiv.appendChild(button)
@@ -23,7 +28,17 @@ button.addEventListener('click', onClick)
 
 document.getElementById('app').appendChild(bdiv)
 
-const names = ['mickey mouse', 'donald duck', 'uncle scrooge', 'daisy duck']
+const defaultText = 'add names here'
+const tdiv = document.createElement('div')
+const tf = document.createElement('input')
+tdiv.appendChild(tf)
+tf.setAttribute('type', 'text')
+tf.setAttribute('value', defaultText)
+tf.addEventListener('input', onTextUpdate)
+
+document.getElementById('app').appendChild(tdiv)
+
+let names = defaultText.split(' ').filter((name) => name !== '')
 
 const app = new PIXI.Application({
   width: 600,
@@ -48,8 +63,6 @@ arrow.x = middlex
 arrow.y = middley
 arrow.rotation = Math.random() * 2 * Math.PI
 
-app.stage.addChild(arrow)
-
 let turning = false
 let rotationspeed = 0
 const friction = 0.00008
@@ -69,16 +82,24 @@ let style = new PIXI.TextStyle({
 })
 
 const radius = 140
-const sectors = []
-names.map((name, i) => {
-  const sector = (2 * Math.PI * i) / names.length
-  let message = new PIXI.Text(name, style)
-  app.stage.addChild(message)
-  const messagex = middlex + Math.cos(sector) * radius - message.width / 2
-  const messagey = middley + Math.sin(sector) * radius - message.height / 2
-  message.position.set(messagex, messagey)
-  sectors.push({ name, sector })
-})
+let sectors
+const updateSectors = () => {
+  sectors = []
+  app.stage.removeChildren()
+  app.stage.addChild(arrow)
+
+  names.map((name, i) => {
+    const sector = (2 * Math.PI * i) / names.length
+    let message = new PIXI.Text(name, style)
+    app.stage.addChild(message)
+    const messagex = middlex + Math.cos(sector) * radius - message.width / 2
+    const messagey = middley + Math.sin(sector) * radius - message.height / 2
+    message.position.set(messagex, messagey)
+    sectors.push({ name, sector })
+  })
+}
+
+updateSectors()
 
 const tick = 30
 let ticked = false
