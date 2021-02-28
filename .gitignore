@@ -1,3 +1,6 @@
+# build dir
+/docs/main.js*
+
 # Logs
 logs
 *.log
